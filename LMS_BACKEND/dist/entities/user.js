@@ -38,15 +38,15 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "userType", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => enrollment_1.Enrollment, (enrollment) => enrollment.user),
+    (0, typeorm_1.OneToMany)(() => enrollment_1.Enrollment, (enrollment) => enrollment.user, { cascade: true }),
     __metadata("design:type", Array)
 ], User.prototype, "enrollments", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => payment_1.Payment, (payment) => payment.user),
+    (0, typeorm_1.OneToMany)(() => payment_1.Payment, (payment) => payment.user, { cascade: true }),
     __metadata("design:type", Array)
 ], User.prototype, "payments", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => result_1.Result, (result) => result.user),
+    (0, typeorm_1.OneToMany)(() => result_1.Result, (result) => result.user, { cascade: true }),
     __metadata("design:type", Array)
 ], User.prototype, "results", void 0);
 exports.User = User = __decorate([

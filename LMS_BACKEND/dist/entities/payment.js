@@ -20,7 +20,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Payment.prototype, "paymentId", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal"),
+    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], Payment.prototype, "amount", void 0);
 __decorate([
@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", String)
 ], Payment.prototype, "paymentMethod", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_1.User, (user) => user.payments),
+    (0, typeorm_1.ManyToOne)(() => user_1.User, (user) => user.payments, { onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "userId" }),
     __metadata("design:type", user_1.User)
 ], Payment.prototype, "user", void 0);

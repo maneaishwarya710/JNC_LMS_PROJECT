@@ -1,21 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { User } from "./user";
+
 @Entity("PAYMENT_LMS")
-export class Payment{
+export class Payment {
 
     @PrimaryGeneratedColumn()
-    paymentId:number
+    paymentId: number;
 
-    @Column("decimal")
-    amount:number
-
-    @Column()
-    paymentDate:Date
+    @Column("decimal", { precision: 10, scale: 2 })
+    amount: number;
 
     @Column()
-    paymentMethod:string   
+    paymentDate: Date;
 
-    @ManyToOne(()=>User, (user)=>user.payments)
-    @JoinColumn({name:"userId"})
-    user:User
+    @Column()
+    paymentMethod: string;
+
+    @ManyToOne(() => User, (user) => user.payments, {onDelete: "CASCADE" })
+    @JoinColumn({ name: "userId" })
+    user: User;
 }

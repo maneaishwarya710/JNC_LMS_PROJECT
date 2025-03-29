@@ -23,11 +23,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Course.prototype, "courseId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ length: 100, default: "default_COURSENAME" }),
     __metadata("design:type", String)
 ], Course.prototype, "courseName", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ length: 500, default: "default_description" }),
     __metadata("design:type", String)
 ], Course.prototype, "description", void 0);
 __decorate([
@@ -35,20 +35,20 @@ __decorate([
     __metadata("design:type", Number)
 ], Course.prototype, "price", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => enrollment_1.Enrollment, (enrollment) => enrollment.course),
+    (0, typeorm_1.OneToMany)(() => enrollment_1.Enrollment, (enrollment) => enrollment.course, { cascade: true }),
     __metadata("design:type", Array)
 ], Course.prototype, "enrollments", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => courseContent_1.CourseContent, (courseContent) => courseContent.course),
-    __metadata("design:type", courseContent_1.CourseContent)
+    (0, typeorm_1.OneToMany)(() => courseContent_1.CourseContent, (courseContent) => courseContent.course, { cascade: true }),
+    __metadata("design:type", Array)
 ], Course.prototype, "contents", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => quiz_1.Quiz, (quiz) => quiz.course),
+    (0, typeorm_1.OneToMany)(() => quiz_1.Quiz, (quiz) => quiz.course, { cascade: true }),
     __metadata("design:type", Array)
 ], Course.prototype, "quizzes", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => result_1.Result, (result) => result.course),
-    __metadata("design:type", result_1.Result)
+    (0, typeorm_1.OneToMany)(() => result_1.Result, (result) => result.course, { cascade: true }),
+    __metadata("design:type", Array)
 ], Course.prototype, "results", void 0);
 exports.Course = Course = __decorate([
     (0, typeorm_1.Entity)("COURSE_LMS")

@@ -17,7 +17,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_repository_1 = require("../repositories/user.repository");
 const dotenv_1 = __importDefault(require("dotenv"));
-const secretKey = "assessment";
+const secretKey = "JNC";
 dotenv_1.default.config();
 class UserService {
     static register(data) {
@@ -45,7 +45,17 @@ class UserService {
             const token = jsonwebtoken_1.default.sign({ username: user.username }, secretKey, {
                 expiresIn: "1d"
             });
+            console.log(user);
             return { token, user };
+        });
+    }
+    static findUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_repository_1.UserRepository.findOne({ where: { userId } });
+            if (!user) {
+                throw new Error("No user found!");
+            }
+            return user;
         });
     }
 }

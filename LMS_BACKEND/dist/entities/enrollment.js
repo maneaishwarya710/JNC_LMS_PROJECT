@@ -29,12 +29,12 @@ __decorate([
     __metadata("design:type", String)
 ], Enrollment.prototype, "completionStatus", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => course_1.Course, (course) => course.enrollments),
+    (0, typeorm_1.ManyToOne)(() => course_1.Course, (course) => course.enrollments, { onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "courseId" }),
     __metadata("design:type", course_1.Course)
 ], Enrollment.prototype, "course", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_1.User, (user) => user.enrollments),
+    (0, typeorm_1.ManyToOne)(() => user_1.User, (user) => user.enrollments, { onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "userId" }),
     __metadata("design:type", user_1.User)
 ], Enrollment.prototype, "user", void 0);

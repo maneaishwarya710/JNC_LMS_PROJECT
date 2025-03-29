@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseContent = void 0;
 const typeorm_1 = require("typeorm");
 const course_1 = require("./course");
+const class_validator_1 = require("class-validator");
 let CourseContent = class CourseContent {
 };
 exports.CourseContent = CourseContent;
@@ -20,12 +21,16 @@ __decorate([
     __metadata("design:type", Number)
 ], CourseContent.prototype, "contentId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ default: "tutorials", length: 50 }),
     __metadata("design:type", String)
 ], CourseContent.prototype, "contentType", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => course_1.Course, (course) => course.contents),
-    (0, typeorm_1.JoinColumn)({ name: "CourseId" }),
+    (0, typeorm_1.Column)({ type: "varchar", length: class_validator_1.MAX, default: "default_content" }),
+    __metadata("design:type", String)
+], CourseContent.prototype, "content", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => course_1.Course, (course) => course.contents, { onDelete: "CASCADE" }),
+    (0, typeorm_1.JoinColumn)({ name: "courseId" }),
     __metadata("design:type", course_1.Course)
 ], CourseContent.prototype, "course", void 0);
 exports.CourseContent = CourseContent = __decorate([

@@ -6,7 +6,7 @@ import { RegisterDTO } from "../dto/register.dto";
 import { LoginDTO } from "../dto/login.dto";
 import dotenv from "dotenv";
 
-const secretKey = "assessment";
+const secretKey = "JNC";
 
 dotenv.config();
 export class UserService {
@@ -32,7 +32,16 @@ export class UserService {
         const token = jwt.sign({ username: user.username }, secretKey, {
             expiresIn: "1d"
         });
+        console.log(user)
         return { token, user };
+    }
+
+    static async findUserById(userId:number){
+        const user = await UserRepository.findOne({ where: { userId } });
+        if (!user) {
+            throw new Error("No user found!");
+        }
+        return user;
     }
 
 }

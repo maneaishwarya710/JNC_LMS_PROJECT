@@ -25,20 +25,20 @@ __decorate([
     __metadata("design:type", String)
 ], Quiz.prototype, "quizName", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ length: 500, default: "default_description" }),
     __metadata("design:type", String)
 ], Quiz.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)("int"),
     __metadata("design:type", Number)
 ], Quiz.prototype, "totalmarks", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => course_1.Course, (course) => course.quizzes),
+    (0, typeorm_1.ManyToOne)(() => course_1.Course, (course) => course.quizzes, { onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "courseId" }),
     __metadata("design:type", course_1.Course)
 ], Quiz.prototype, "course", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => result_1.Result, (result) => result.quiz),
+    (0, typeorm_1.OneToMany)(() => result_1.Result, (result) => result.quiz, { cascade: true }),
     __metadata("design:type", Array)
 ], Quiz.prototype, "results", void 0);
 exports.Quiz = Quiz = __decorate([

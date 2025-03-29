@@ -22,7 +22,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Result.prototype, "resultId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)("int"),
     __metadata("design:type", Number)
 ], Result.prototype, "score", void 0);
 __decorate([
@@ -31,12 +31,12 @@ __decorate([
     __metadata("design:type", course_1.Course)
 ], Result.prototype, "course", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => quiz_1.Quiz, (quiz) => quiz.results),
+    (0, typeorm_1.ManyToOne)(() => quiz_1.Quiz, (quiz) => quiz.results, { onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "quizId" }),
     __metadata("design:type", quiz_1.Quiz)
 ], Result.prototype, "quiz", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_1.User, (user) => user.results),
+    (0, typeorm_1.ManyToOne)(() => user_1.User, (user) => user.results, { onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "userId" }),
     __metadata("design:type", user_1.User)
 ], Result.prototype, "user", void 0);

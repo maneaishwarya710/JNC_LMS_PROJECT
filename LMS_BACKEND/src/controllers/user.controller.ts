@@ -28,5 +28,15 @@ export class UserController {
             res.status(400).json({ error: "Login Failed!" });
         }
     }
+
+    static async findUserById(req: Request, res: Response){
+        const id=Number(req.params.id);
+        try {
+            const user = await UserService.findUserById(id);
+            res.json(user);
+        } catch (error) {
+            res.status(400).json({ error: "User not Found!" });
+        }
+    }
 }
 

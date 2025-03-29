@@ -5,29 +5,29 @@ import { Quiz } from "./quiz";
 import { Result } from "./result";
 
 @Entity("COURSE_LMS")
-export class Course{
+export class Course {
 
     @PrimaryGeneratedColumn()
-    courseId:number
+    courseId: number;
+
+    @Column({ length: 100, default:"default_COURSENAME"})
+    courseName: string;
+
+    @Column({ length: 500, default:"default_description" })
+    description: string;
 
     @Column()
-    courseName:string
+    price: number;
 
-    @Column()
-    description:string
+    @OneToMany(() => Enrollment, (enrollment) => enrollment.course, {cascade:true})
+    enrollments: Enrollment[];
 
-    @Column()
-    price:number  
+    @OneToMany(() => CourseContent, (courseContent) => courseContent.course, {cascade:true})
+    contents: CourseContent[];
 
-    @OneToMany(()=>Enrollment, (enrollment)=>enrollment.course)
-    enrollments:Enrollment[];
+    @OneToMany(() => Quiz, (quiz) => quiz.course, {cascade:true})
+    quizzes: Quiz[];
 
-    @OneToMany(()=>CourseContent, (courseContent)=>courseContent.course)
-    contents:CourseContent
-
-    @OneToMany(()=>Quiz, (quiz)=>quiz.course)
-    quizzes:Quiz[]
-
-    @OneToMany(()=>Result, (result)=>result.course)
-    results:Result
+    @OneToMany(() => Result, (result) => result.course, {cascade:true})
+    results: Result[];
 }

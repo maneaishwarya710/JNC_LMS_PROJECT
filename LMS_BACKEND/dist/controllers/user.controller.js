@@ -47,5 +47,17 @@ class UserController {
             }
         });
     }
+    static findUserById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = Number(req.params.id);
+            try {
+                const user = yield user_service_1.UserService.findUserById(id);
+                res.json(user);
+            }
+            catch (error) {
+                res.status(400).json({ error: "User not Found!" });
+            }
+        });
+    }
 }
 exports.UserController = UserController;
