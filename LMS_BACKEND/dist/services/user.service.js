@@ -39,10 +39,11 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = data;
             const user = yield user_repository_1.UserRepository.findOne({ where: { username } });
+            console.log(user);
             if (!user || !(yield bcrypt_1.default.compare(password, user.password))) {
                 throw new Error("Invalid email or password");
             }
-            const token = jsonwebtoken_1.default.sign({ username: user.username }, secretKey, {
+            const token = jsonwebtoken_1.default.sign({ userId: user.userId, username: user.username, password: user.password }, secretKey, {
                 expiresIn: "1d"
             });
             console.log(user);

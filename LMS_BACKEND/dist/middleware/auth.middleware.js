@@ -25,7 +25,11 @@ const authenticateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     const token = authHeader.split(" ")[1];
     try {
         const decoded = jsonwebtoken_1.default.verify(token, secretKey);
+        console.log("Decoded token payload:", decoded);
+        console.log("Token from header:", token);
+        console.log("username from payload:", decoded.username); //everything is good till here
         const freshUser = yield user_service_1.UserService.findUserById(decoded.userId);
+        console.log("user from decoded header:", freshUser);
         req.user = freshUser;
         next();
     }
