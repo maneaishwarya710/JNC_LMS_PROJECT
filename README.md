@@ -1,5 +1,18 @@
 # JNC_LMS_PROJECT
 #Edurise- "Rise Above, Learn Beyond"
+#color theme-
+        Navy and White Palette
+        Primary Color: #001F3F (Navy)
+        Secondary Color: #FFFFFF (White)
+        Accent Color: #FF4136 (Red)
+        Background Color: #F0F0F0 (Light Gray)
+        Text Color: #111111 (Black)
+
+
+
+
+
+
 #31 March 2025
 
 -FRONTEND
