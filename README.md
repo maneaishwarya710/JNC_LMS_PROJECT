@@ -1,5 +1,5 @@
 # JNC_LMS_PROJECT
-
+#Edurise- "Rise Above, Learn Beyond"
 #31 March 2025
 
 -FRONTEND
