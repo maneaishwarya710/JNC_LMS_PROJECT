@@ -21,5 +21,14 @@
 --interceptor
 --Implemented global error handler for global errors and API errors
 
+#1 April 2025
+-FRONTEND
+--state management using behavior subject
+--fortawesome 
+--logout
+--Integration of admin APIs with frontend
+--Admin route guard
+
+
 
 
