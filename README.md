@@ -1,44 +1,46 @@
-<h3>Create Quiz</h3>
-<form [formGroup]="quizForm" (ngSubmit)="createQuiz()">
-  <div>
-    <label for="quizName">Quiz Name:</label>
-    <input id="quizName" formControlName="quizName" type="text" />
-  </div>
-  <div>
-    <label for="description">Description:</label>
-    <input id="description" formControlName="description" type="text" />
-  </div>
-  <div>
-    <label for="totalmarks">Total Marks:</label>
-    <input id="totalmarks" formControlName="totalmarks" type="number" />
-  </div>
-  <div>
-    <label for="courseId">Course ID:</label>
-    <input id="courseId" formControlName="courseId" type="number" />
-  </div>
+import { Quiz } from '../entities/quiz';
+import { Question } from '../entities/question';
+import { Option } from '../entities/option';
+import { QuizRepository } from '../repositories/quiz.repository';
+import { questionRepository } from '../repositories/question.repository';
+import { optionRepository } from '../repositories/option.repository';
+import { CourseRepository } from '../repositories/course.repository';
 
-  <div formArrayName="questions">
-    <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i">
-      <h4>Question {{ i + 1 }}</h4>
-      <label for="questionText-{{ i }}">Question Text:</label>
-      <input id="questionText-{{ i }}" formControlName="questionText" type="text" />
+export class QuizService {
+  async createQuiz(quizData: Partial<Quiz>, questions: any[]): Promise<Quiz> {
+    // Fetch course from DB to avoid NULL courseId
+    const course = await CourseRepository.findOne({ where: { courseId: quizData.courseId } });
+    if (!course) {
+      throw new Error('Course not found');
+    }
 
-      <label for="correctOptionId-{{ i }}">Correct Option ID:</label>
-      <input id="correctOptionId-{{ i }}" formControlName="correctOptionId" type="number" />
+    const quiz = QuizRepository.create({
+      quizName: quizData.quizName,
+      description: quizData.description,
+      totalmarks: quizData.totalmarks,
+      course: course // ✅ Set course relation properly
+    });
 
-      <div formArrayName="options">
-        <div *ngFor="let option of options(i).controls; let j = index" [formGroupName]="j">
-          <label for="optionText-{{ i }}-{{ j }}">Option {{ j + 1 }}:</label>
-          <input id="optionText-{{ i }}-{{ j }}" formControlName="optionText" type="text" />
-        </div>
-        <button type="button" (click)="addOption(i)">Add Option</button>
-      </div>
-    </div>
-  </div>
+    const savedQuiz = await QuizRepository.save(quiz);
 
-  <button type="button" (click)="addQuestion()">Add Question</button>
-  <br />
-  <button type="submit" [disabled]="quizForm.invalid">Create Quiz</button>
-</form>
+    for (const q of questions) {
+      const question = questionRepository.create({
+        questionText: q.questionText,
+        correctOptionId: q.correctOptionId,
+        quiz: savedQuiz
+      });
 
+      const savedQuestion = await questionRepository.save(question);
 
+      for (const opt of q.options) {
+        const option = optionRepository.create({
+          optionText: opt.optionText,
+          question: savedQuestion
+        });
+        await optionRepository.save(option);
+      }
+    }
+
+    return savedQuiz;
+  }
+}
