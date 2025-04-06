@@ -1,32 +1,41 @@
-async createQuiz(quizDto: CreateQuizDto): Promise<Quiz> {
-  const { questions, ...quizData } = quizDto;
+async createQuiz(quizData: Partial<Quiz>, questions: any[]): Promise<Quiz> {
+  const course = await courseRepository.findOne({
+    where: { courseId: quizData.course?.courseId },
+  });
 
-  const quiz = this.quizRepository.create(quizData);
-  const savedQuiz = await this.quizRepository.save(quiz);
+  if (!course) {
+    throw new Error('Course not found');
+  }
+
+  // Create the quiz object
+  const quiz = QuizRepository.create({
+    quizName: quizData.quizName,
+    description: quizData.description,
+    totalmarks: quizData.totalmarks,
+    course: course,
+  });
+
+  const savedQuiz = await QuizRepository.save(quiz);
 
   for (const q of questions) {
-    const question = this.questionRepository.create({
-      quizId: savedQuiz.quizId,
+    const question = questionRepository.create({
       questionText: q.questionText,
+      correctOptionId: q.correctOptionId,
+      quiz: savedQuiz,
     });
-    const savedQuestion = await this.questionRepository.save(question);
 
-    const savedOptions = [];
+    const savedQuestion = await questionRepository.save(question);
+
     for (const opt of q.options) {
-      const option = this.optionRepository.create({
-        questionId: savedQuestion.questionId,
+      const option = optionRepository.create({
         optionText: opt.optionText,
+        isCorrect: opt.optionId === q.correctOptionId, // flag correct
+        question: savedQuestion,
       });
-      const savedOption = await this.optionRepository.save(option);
-      savedOptions.push(savedOption);
-    }
 
-    // Set correctOptionId after options are saved
-    const correctOption = savedOptions[q.correctOptionIndex];
-    savedQuestion.correctOptionId = correctOption.optionId;
-    await this.questionRepository.save(savedQuestion);
+      await optionRepository.save(option);
+    }
   }
 
   return savedQuiz;
 }
-quizData: Partial<Quiz>, questions: any[]
