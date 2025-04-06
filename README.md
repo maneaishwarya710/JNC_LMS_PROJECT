@@ -1,25 +1,31 @@
-query: SELECT SCHEMA_NAME() AS "schema_name"
-Server is running on port 3004
-query: SELECT "Quiz"."quizId" AS "Quiz_quizId", "Quiz"."quizName" AS "Quiz_quizName", "Quiz"."description" AS "Quiz_description", "Quiz"."totalmarks" AS "Quiz_totalmarks", "Quiz"."courseId" AS "Quiz_courseId", "Quiz__Quiz_questions"."questionId" AS "Quiz__Quiz_questions_questionId", "Quiz__Quiz_questions"."quizId" AS "Quiz__Quiz_questions_quizId", "Quiz__Quiz_questions"."questionText" AS "Quiz__Quiz_questions_questionText", "Quiz__Quiz_questions"."correctOptionId" AS "Quiz__Quiz_questions_correctOptionId", "Quiz__Quiz_questions__Quiz__Quiz_questions_options"."optionId" AS "Quiz__Quiz_questions__Quiz__Quiz_questions_options_optionId", "Quiz__Quiz_questions__Quiz__Quiz_questions_options"."questionId" AS "Quiz__Quiz_questions__Quiz__Quiz_questions_options_questionId", "Quiz__Quiz_questions__Quiz__Quiz_questions_options"."optionText" AS "Quiz__Quiz_questions__Quiz__Quiz_questions_options_optionText", "Quiz__Quiz_questions__Quiz__Quiz_questions_options"."isCorrect" AS "Quiz__Quiz_questions__Quiz__Quiz_questions_options_isCorrect" FROM "Quiz_LMS" "Quiz" LEFT JOIN "QUESTION_LMS" "Quiz__Quiz_questions" ON "Quiz__Quiz_questions"."quizId"="Quiz"."quizId"  LEFT JOIN "OPTION_LMS" "Quiz__Quiz_questions__Quiz__Quiz_questions_options" ON "Quiz__Quiz_questions__Quiz__Quiz_questions_options"."questionId"="Quiz__Quiz_questions"."questionId"  LEFT JOIN "COURSE_LMS" "Quiz__Quiz_course" ON "Quiz__Quiz_course"."courseId"="Quiz"."courseId" WHERE (((("Quiz__Quiz_course"."courseId" = @0)))) -- PARAMETERS: [19]
-query: SELECT "Question"."questionId" AS "Question_questionId", "Question"."quizId" AS "Question_quizId", "Question"."questionText" AS "Question_questionText", "Question"."correctOptionId" AS "Question_correctOptionId" FROM "QUESTION_LMS" "Question" WHERE (("Question"."questionId" = @0)) ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY -- PARAMETERS: [3]
-query: SELECT "Question"."questionId" AS "Question_questionId", "Question"."quizId" AS "Question_quizId", "Question"."questionText" AS "Question_questionText", "Question"."correctOptionId" AS "Question_correctOptionId" FROM "QUESTION_LMS" "Question" WHERE (("Question"."questionId" = @0)) ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY -- PARAMETERS: [4]
-query: SELECT "Question"."questionId" AS "Question_questionId", "Question"."quizId" AS "Question_quizId", "Question"."questionText" AS "Question_questionText", "Question"."correctOptionId" AS "Question_correctOptionId" FROM "QUESTION_LMS" "Question" WHERE (("Question"."questionId" = @0)) ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY -- PARAMETERS: [5]
-query: SELECT "Question"."questionId" AS "Question_questionId", "Question"."quizId" AS "Question_quizId", "Question"."questionText" AS "Question_questionText", "Question"."correctOptionId" AS "Question_correctOptionId" FROM "QUESTION_LMS" "Question" WHERE (("Question"."questionId" = @0)) ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY -- PARAMETERS: [6]
-query: SELECT "Question"."questionId" AS "Question_questionId", "Question"."quizId" AS "Question_quizId", "Question"."questionText" AS "Question_questionText", "Question"."correctOptionId" AS "Question_correctOptionId" FROM "QUESTION_LMS" "Question" WHERE (("Question"."questionId" = @0)) ORDER BY (SELECT NULL) OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY -- PARAMETERS: [7]
-query: BEGIN TRANSACTION
-query: DECLARE @OutputTable TABLE ("attemptId" int, "score" float, "attemptDate" datetime);
+async createQuiz(quizDto: CreateQuizDto): Promise<Quiz> {
+  const { questions, ...quizData } = quizDto;
 
-INSERT INTO "QUIZATTEMPT_LMS"("userId", "quizId", "score", "attemptDate") OUTPUT INSERTED."attemptId", INSERTED."score", INSERTED."attemptDate" INTO @OutputTable VALUES (@0, @1, @2, @3);
+  const quiz = this.quizRepository.create(quizData);
+  const savedQuiz = await this.quizRepository.save(quiz);
 
-SELECT * FROM @OutputTable -- PARAMETERS: [{"value":14,"type":"int","params":[]},{"value":17,"type":"int","params":[]},{"value":0,"type":"float","params":[]},{"value":"2025-04-06T08:26:08.000Z","type":"datetime","params":[]}]
-query: COMMIT
-query: BEGIN TRANSACTION
-query: DECLARE @OutputTable TABLE ("resultId" int, "attemptDate" datetime2);
+  for (const q of questions) {
+    const question = this.questionRepository.create({
+      quizId: savedQuiz.quizId,
+      questionText: q.questionText,
+    });
+    const savedQuestion = await this.questionRepository.save(question);
 
-INSERT INTO "RESULT_LMS"("score", "attemptDate", "courseId", "quizId", "userId") OUTPUT INSERTED."resultId", INSERTED."attemptDate" INTO
- @OutputTable VALUES (@0, @1, DEFAULT, @2, @3);
+    const savedOptions = [];
+    for (const opt of q.options) {
+      const option = this.optionRepository.create({
+        questionId: savedQuestion.questionId,
+        optionText: opt.optionText,
+      });
+      const savedOption = await this.optionRepository.save(option);
+      savedOptions.push(savedOption);
+    }
 
-SELECT * FROM @OutputTable -- PARAMETERS: [{"value":0,"type":"int","params":[]},{"value":"2025-04-06T08:26:08.485Z","type":"datetime2","params":[]},{"value":17,"type":"int","params":[]},{"value":14,"type":"int","params":[]}]
-query: COMMIT
-query: SELECT "Result"."resultId" AS "Result_resultId", "Result"."score" AS "Result_score", "Result"."attemptDate" AS "Result_attemptDate", "Result"."courseId" AS "Result_courseId", "Result"."quizId" AS "Result_quizId", "Result"."userId" AS "Result_userId", "Result__Result_quiz"."quizId" AS "Result__Result_quiz_quizId", "Result__Result_quiz"."quizName" AS "Result__Result_quiz_quizName", "Result__Result_quiz"."description" AS "Result__Result_quiz_description", "Result__Result_quiz"."totalmarks" AS "Result__Result_quiz_totalmarks", "Result__Result_quiz"."courseId" AS "Result__Result_quiz_courseId", "Result__Result_course"."courseId" AS "Result__Result_course_courseId", "Result__Result_course"."courseName" AS "Result__Result_course_courseName", "Result__Result_course"."description" AS "Result__Result_course_description", "Result__Result_course"."price" AS "Result__Result_course_price", "Result__Result_course"."imgurl" AS "Result__Result_course_imgurl", "Result__Result_course"."userUserId" AS "Result__Result_course_userUserId" FROM "RESULT_LMS" "Result" LEFT JOIN "Quiz_LMS" "Result__Result_quiz" ON "Result__Result_quiz"."quizId"="Result"."quizId"  LEFT JOIN "COURSE_LMS" "Result__Result_course" ON "Result__Result_course"."courseId"="Result"."courseId"  LEFT JOIN "USER_LMS" "Result__Result_user" ON "Result__Result_user"."userId"="Result"."userId" WHERE (((("Result__Result_user"."userId" = @0)))) -- PARAMETERS: [14]
+    // Set correctOptionId after options are saved
+    const correctOption = savedOptions[q.correctOptionIndex];
+    savedQuestion.correctOptionId = correctOption.optionId;
+    await this.questionRepository.save(savedQuestion);
+  }
 
+  return savedQuiz;
+}
