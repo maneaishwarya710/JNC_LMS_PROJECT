@@ -29,3 +29,4 @@ async createQuiz(quizDto: CreateQuizDto): Promise<Quiz> {
 
   return savedQuiz;
 }
+quizData: Partial<Quiz>, questions: any[]
