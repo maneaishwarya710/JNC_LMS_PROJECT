@@ -1,16 +1,41 @@
-[nodemon] starting `node dist/index.js`
-query: SELECT SCHEMA_NAME() AS "schema_name"
-Server is running on port 3004
-query: BEGIN TRANSACTION
-query: DECLARE @OutputTable TABLE ("attemptId" int, "score" float, "attemptDate" datetime);
+// src/quiz/quiz.service.ts
+async submitQuiz(
+  attemptData: { userId: number; quizId: number },
+  answers: { questionId: number; selectedOptionId: number }[],
+): Promise<{ score: number }> {
+  const { userId, quizId } = attemptData;
 
-INSERT INTO "QUIZATTEMPT_LMS"("userId", "quizId", "score", "attemptDate") OUTPUT INSERTED."attemptId", INSERTED."score", INSERTED."attemptDate" INTO @OutputTable VALUES (@0, @1, @2, @3);
+  let score = 0;
 
-SELECT * FROM @OutputTable -- PARAMETERS: [{"value":1,"type":"int","params":[]},{"value":17,"type":"int","params":[]},{"value":0,"type":"float","params":[]},{"value":"2025-04-06T06:27:30.000Z","type":"datetime","params":[]}]
-query failed: DECLARE @OutputTable TABLE ("attemptId" int, "score" float, "attemptDate" datetime);
+  for (const answer of answers) {
+    // Fetch the correct option for this question
+    const correctOption = await this.optionRepository.findOne({
+      where: {
+        question: { questionId: answer.questionId },
+        isCorrect: true,
+      },
+      relations: ['question'], // Ensure relation is loaded
+    });
 
-INSERT INTO "QUIZATTEMPT_LMS"("userId", "quizId", "score", "attemptDate") OUTPUT INSERTED."attemptId", INSERTED."score", INSERTED."attemptDate" INTO @OutputTable VALUES (@0, @1, @2, @3);
+    // Compare selectedOptionId with the correct one
+    if (
+      correctOption &&
+      correctOption.optionId === answer.selectedOptionId
+    ) {
+      score++;
+    }
+  }
 
-SELECT * FROM @OutputTable -- PARAMETERS: [{"value":1,"type":"int","params":[]},{"value":17,"type":"int","params":[]},{"value":0,"type":"float","params":[]},{"value":"2025-04-06T06:27:30.000Z","type":"datetime","params":[]}]
-error: QueryFailedError: Error: The INSERT statement conflicted with the FOREIGN KEY constraint "FK_d8fa325fd031815edeec6e94f4f". The conflict occurred in database "JIBE_Main_Training", table "dbo.USER_LMS", column 'userId'.
-query: ROLLBACK
+  // Create and save the attempt
+  const attempt = this.attemptRepository.create({
+    userId,
+    quizId,
+    score,
+    attemptDate: new Date(), // Add date explicitly
+  });
+
+  await this.attemptRepository.save(attempt);
+
+  return { score };
+}
+
