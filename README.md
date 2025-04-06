@@ -1,12 +1,16 @@
-get-quiz-by-course-id.component.ts:42 
- ERROR Error: server error (500):Http failure response for http://localhost:3004/quiz/submitQuiz: 500 Internal Server Error
-    at http-error.interceptor.ts:27:39
-    at Observable2.init [as _subscribe] (throwError.js:8:29)
-    at Observable2._trySubscribe (Observable.js:33:19)
-    at Observable.js:27:115
-    at errorContext (errorContext.js:23:5)
-    at Observable2.subscribe (Observable.js:23:5)
-    at catchError.js:14:23
-    at OperatorSubscriber2._this._error (OperatorSubscriber.js:21:9)
-    at Subscriber2.error (Subscriber.js:40:12)
-    at Subscriber2._error (Subscriber.js:63:24)
+[nodemon] starting `node dist/index.js`
+query: SELECT SCHEMA_NAME() AS "schema_name"
+Server is running on port 3004
+query: BEGIN TRANSACTION
+query: DECLARE @OutputTable TABLE ("attemptId" int, "score" float, "attemptDate" datetime);
+
+INSERT INTO "QUIZATTEMPT_LMS"("userId", "quizId", "score", "attemptDate") OUTPUT INSERTED."attemptId", INSERTED."score", INSERTED."attemptDate" INTO @OutputTable VALUES (@0, @1, @2, @3);
+
+SELECT * FROM @OutputTable -- PARAMETERS: [{"value":1,"type":"int","params":[]},{"value":17,"type":"int","params":[]},{"value":0,"type":"float","params":[]},{"value":"2025-04-06T06:27:30.000Z","type":"datetime","params":[]}]
+query failed: DECLARE @OutputTable TABLE ("attemptId" int, "score" float, "attemptDate" datetime);
+
+INSERT INTO "QUIZATTEMPT_LMS"("userId", "quizId", "score", "attemptDate") OUTPUT INSERTED."attemptId", INSERTED."score", INSERTED."attemptDate" INTO @OutputTable VALUES (@0, @1, @2, @3);
+
+SELECT * FROM @OutputTable -- PARAMETERS: [{"value":1,"type":"int","params":[]},{"value":17,"type":"int","params":[]},{"value":0,"type":"float","params":[]},{"value":"2025-04-06T06:27:30.000Z","type":"datetime","params":[]}]
+error: QueryFailedError: Error: The INSERT statement conflicted with the FOREIGN KEY constraint "FK_d8fa325fd031815edeec6e94f4f". The conflict occurred in database "JIBE_Main_Training", table "dbo.USER_LMS", column 'userId'.
+query: ROLLBACK
