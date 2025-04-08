@@ -1,116 +1,83 @@
+Perfect! You can totally implement a **Byju’s-style floating discussion icon** at the **bottom right** of your LMS site that, when clicked, redirects the user to the Discussion Forum page.
+
+---
+
+### Here's how you can do it in Angular:
+
+#### 1. **Create a Floating Button Component**
+
+**`src/app/components/floating-discussion-button/floating-discussion-button.component.ts`**:
+
+```ts
 import { Component } from '@angular/core';
-import { QuizService } from '../../services/quiz.service';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-get-quiz-by-course-id',
-  templateUrl: './get-quiz-by-course-id.component.html',
-  styleUrls: ['./get-quiz-by-course-id.component.css']
+  selector: 'app-floating-discussion-button',
+  templateUrl: './floating-discussion-button.component.html',
+  styleUrls: ['./floating-discussion-button.component.css']
 })
-export class GetQuizByCourseIdComponent {
-  courseId: number = 19;
-  userId: number = 14; // Replace with actual user ID logic
-  quiz: any;
-  answers: any[] = [];
-  submitted = false;
-  score: number | null = null;
+export class FloatingDiscussionButtonComponent {
+  constructor(private router: Router) {}
 
-  constructor(private quizService: QuizService) {}
-
-  fetchQuiz() {
-    this.quizService.getQuizByCourseId(this.courseId).subscribe((data) => {
-      if (data.length > 0) {
-        this.quiz = data[0];
-        this.submitted = false;
-        this.answers = this.quiz.questions.map((q: any) => ({
-          questionId: q.questionId,
-          selectedOptionId: null
-        }));
-      } else {
-        this.quiz = null;
-        this.answers = [];
-        this.score = null;
-        this.submitted = false;
-        alert('No quiz found for the given course ID');
-      }
-    }, err => {
-      console.error('Error fetching quiz:', err);
-      alert('An error occurred while fetching the quiz');
-    });
-  }
-
-  selectOption(questionId: number, optionId: number) {
-    const answer = this.answers.find(a => a.questionId === questionId);
-    if (answer) {
-      answer.selectedOptionId = optionId;
-    }
-  }
-
-  submitQuiz() {
-    const attemptData = {
-      userId: this.userId,
-      quizId: this.quiz.quizId,
-      attemptDate: new Date(),
-    };
-    this.quizService.submitQuiz(attemptData, this.answers).subscribe(res => {
-      this.score = res.score;
-      this.submitted = true;
-      this.getResults();
-    }, err => {
-      console.error('Error submitting quiz:', err);
-      alert('Error submitting the quiz');
-    });
-  }
-
-  getResults() {
-    this.quizService.getResultsByUserId(this.userId).subscribe(results => {
-      console.log('Your past results:', results);
-    });
+  goToDiscussionForum() {
+    this.router.navigate(['/discussion-forum']);
   }
 }
+```
 
+---
 
+**`floating-discussion-button.component.html`**:
 
-<div class="container p-4">
-  <h2 class="text-xl font-bold mb-4">Take Quiz</h2>
+```html
+<button class="floating-btn" (click)="goToDiscussionForum()" title="Open Discussion Forum">
+  💬
+</button>
+```
 
-  <label for="courseId" class="block mb-2 font-medium">Enter Course ID:</label>
-  <input [(ngModel)]="courseId" type="number" class="border p-2 mb-4 w-full" placeholder="e.g. 1" />
+---
 
-  <button (click)="fetchQuiz()" class="bg-blue-600 text-white px-4 py-2 rounded">
-    Get Quiz
-  </button>
+**`floating-discussion-button.component.css`**:
 
-  <div *ngIf="quiz">
-    <h3 class="text-lg font-semibold mt-4">{{ quiz.quizName }}</h3>
-    <p>{{ quiz.description }}</p>
+```css
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px 18px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
 
-    <form *ngFor="let q of quiz.questions">
-      <div class="mt-4">
-        <p class="font-medium">{{ q.questionText }}</p>
-        <div *ngFor="let opt of q.options">
-          <input
-            type="radio"
-            [name]="'question_' + q.questionId"
-            [value]="opt.optionId"
-            (change)="selectOption(q.questionId, opt.optionId)"
-            [disabled]="submitted"
-          />
-          <label>{{ opt.optionText }}</label>
-        </div>
-      </div>
-    </form>
+.floating-btn:hover {
+  background-color: #0056b3;
+}
+```
 
-    <button
-      *ngIf="!submitted"
-      (click)="submitQuiz()"
-      class="mt-4 bg-green-600 text-white px-4 py-2 rounded"
-    >
-      Submit Quiz
-    </button>
+---
 
-    <div *ngIf="submitted" class="mt-4 text-green-700">
-      <p>✅ Quiz submitted!</p>
-      <p>Your score: {{ score }}/{{ quiz.questions.length }}</p>
-    </div>
-  </div>
-</div>
+#### 2. **Use the Floating Button Globally**
+
+In your main layout or in `app.component.html`, add:
+
+```html
+<router-outlet></router-outlet>
+<app-floating-discussion-button></app-floating-discussion-button>
+```
+
+---
+
+### Outcome:
+- The floating chat icon appears on all pages.
+- When clicked, it navigates users to the discussion forum page.
+
+---
+
+Would you like this button to be **hidden on the discussion page itself**? I can add that logic too if needed.
